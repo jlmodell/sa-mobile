@@ -4,7 +4,7 @@ import {
     Geom,
     Axis,
     Tooltip,
-    Legend,
+    // Legend,
   } from "bizcharts";
 
 const SimpleBarChart = ({data, colorMap}) => (  	    

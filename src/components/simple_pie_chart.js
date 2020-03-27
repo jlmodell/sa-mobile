@@ -5,7 +5,7 @@ import {
   Geom,
   Tooltip,
   Coord,
-  Label,
+//   Label,
 } from "bizcharts";
 import Store from "../store/store";
 

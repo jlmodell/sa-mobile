@@ -1,15 +1,16 @@
 import React from 'react';
 import { observer } from 'mobx-react'
-import {useHistory} from 'react-router-dom'
+// import {useHistory} from 'react-router-dom'
 
 import Store from '../store/store'
 import {validItem} from '../utilities/utilities'
 
 import SimpleBarChart from '../components/simple_bar_chart'
 import SimplePieChart from '../components/simple_pie_chart'
+import SimpleDataTable from '../components/simple_data_table';
 
 const Dashboard = observer(() => {
-    const history = useHistory()
+    // const history = useHistory()
     const [state, setState] = React.useState({
         valid: false,        
     })
@@ -135,7 +136,19 @@ const Dashboard = observer(() => {
                                 </div>
                             </div>
                         </section>                        
-                        <section id="table" className="grid"><p>i am a table</p></section>
+                        <section id="table">
+                            <div className="data-table-container grid">
+                                <div className="data-table-title"><h2>Sales Details</h2></div>
+                                <div className="period-selector">
+                                    <button className={Store.period === "twoYearPriorPeriod" ? "period-selector-active" : null} onClick={() => Store.period = "twoYearPriorPeriod"}>{Store.twoYearPriorEndingPeriod}</button>
+                                    <button className={Store.period === "oneYearPriorPeriod" ? "period-selector-active" : null} onClick={() => Store.period = "oneYearPriorPeriod"}>{Store.oneYearPriorEndingPeriod}</button>
+                                    <button className={Store.period === "currentPeriod" ? "period-selector-active" : null} onClick={() => Store.period = "currentPeriod"}>{Store.endingPeriod}</button>
+                                </div>
+                                <div className="data-table">
+                                    <SimpleDataTable />
+                                </div>
+                            </div>
+                        </section>
                     </>
                 )
         }

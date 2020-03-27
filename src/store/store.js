@@ -91,7 +91,7 @@ var Store = observable(
 		barChartData: [],
 		colorMap: {},
 		colorMapChoices: ["#209BDD","#1581E6","#0860BF"],
-		dataTabledata: [],
+		dataTableData: [],
 		async gql_fetch_data() {
 			Store.isLoaded = false;
 
@@ -266,9 +266,8 @@ var Store = observable(
 			Store.pieChartData = pieChartData;
 			// console.log(Store.pieChartData)
 			// console.log(pieChartData)
-			Store.dataTabledata = dataTableData;
-			Store.colorMap = colorMap;
-			// console.log(Store.dataTabledata);
+			Store.dataTableData = dataTableData;
+			Store.colorMap = colorMap;			
 
             Store.isLoaded = true;
             
