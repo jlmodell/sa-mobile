@@ -1,6 +1,6 @@
 import React from 'react';
 import { Switch, Redirect, Route, withRouter } from 'react-router-dom';
-import Store from '../store/store'
+import auth from '../store/auth.store'
 import Login from '../pages/login'
 import Dashboard from '../pages/dashboard';
 import { observer } from 'mobx-react'
@@ -10,7 +10,7 @@ const PrivateRoute= ({ children, ...rest }) => {
         <Route
             {...rest}
             render={() =>
-            Store.token ? (
+            auth.token ? (
                 children
             ) : (
                 <Redirect to="/" />

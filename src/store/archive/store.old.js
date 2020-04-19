@@ -40,7 +40,7 @@ var Store = observable({
 		Cookies.remove('refresh-token');
 		return true;
 	},
-	minBar: false,
+	minBar: false,       // ??
 	setMinBar() {
 		Store.minBar = !Store.minBar;
 	},

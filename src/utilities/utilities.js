@@ -1,6 +1,8 @@
-import {items} from './busse.items'
+export const dateHelper = (date) => {
+    let d = new Date(date)
+    let year = d.getFullYear()
+    let month = d.getMonth()
+    let day = d.getDate()
 
-export const validItem = (item) => {
-    return items.includes(item)
+    return new Date(year, month, day, 0,0,0,0).toDateString()
 }
-

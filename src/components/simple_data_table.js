@@ -3,29 +3,26 @@ import { observer } from 'mobx-react';
 import MUIDataTable from 'mui-datatables';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
-import Store from '../store/store';
-import zIndex from '@material-ui/core/styles/zIndex';
+import query from '../store/query.store';
 
-const SimpleDataTable = observer(() => {
-	var data;
-	var title;
-
-	switch (Store.period) {
-		case 'currentPeriod':
-			data = Store.dataTableData[2];
-			title = Store.zeroYear;
-			break;
-		case 'oneYearPriorPeriod':
-			data = Store.dataTableData[1];
-			title = Store.oneYear;
-			break;
-		case 'twoYearPriorPeriod':
-			data = Store.dataTableData[0];
-			title = Store.twoYear;
-			break;
-		default:
-			break;
-	}
+const SimpleDataTable = observer(() => {	
+  var title;
+  
+  const [data, _] = React.useState(query.customers_data.map(c => {
+    return {
+      customer: c._id.customer,
+      cid: c._id.cid,
+      quantity: c.quantity,
+      sales: c.sales,
+      costs: c.costs,
+      commissions: c.commissions,
+      tradefees: c.tradefees,
+      rebates: c.rebates,
+      freight_overhead: c.freight + c.overhead,
+      gross_profit: c.sales - c.costs - c.commissions - c.tradefees - c.freight - c.overhead,
+      gross_profit_margin: ((c.sales - c.costs - c.commissions - c.tradefees - c.freight - c.overhead)/c.sales)*100
+    }
+  }))
 
 	const columns = [
 		{
@@ -97,62 +94,6 @@ const SimpleDataTable = observer(() => {
 					return value.toLocaleString(undefined, {
 						minimumFractionDigits: 0,
 						maximumFractionDigits: 0
-					});
-				}
-			}
-		},
-		{
-			label: 'Avg $Price/Cs',
-			name: 'averagePricePerCase',
-			options: {
-				sort: true,
-				customHeadRender: (columnMeta) => (
-					<th
-						key={3}
-						style={{
-							wordWrap: 'normal',
-							padding: '10px',
-							fontSize: '0.7em',
-							textAlign: 'left',
-							fontWeight: 'bold',
-							cursor: 'pointer'
-						}}
-					>
-						{columnMeta.label}
-					</th>
-				),
-				customBodyRender: (value, _, __) => {
-					return value.toLocaleString(undefined, {
-						minimumFractionDigits: 2,
-						maximumFractionDigits: 2
-					});
-				}
-			}
-		},
-		{
-			label: 'Avg $Rebated/Cs',
-			name: 'averageSellPricePerCaseAfterDiscountsAndRebates',
-			options: {
-				sort: true,
-				customHeadRender: (columnMeta) => (
-					<th
-						key={4}
-						style={{
-							wordWrap: 'normal',
-							padding: '10px',
-							fontSize: '0.7em',
-							textAlign: 'left',
-							fontWeight: 'bold',
-							cursor: 'pointer'
-						}}
-					>
-						{columnMeta.label}
-					</th>
-				),
-				customBodyRender: (value, _, __) => {
-					return value.toLocaleString(undefined, {
-						minimumFractionDigits: 2,
-						maximumFractionDigits: 2
 					});
 				}
 			}
@@ -270,8 +211,8 @@ const SimpleDataTable = observer(() => {
 			}
 		},
 		{
-			label: 'Freight',
-			name: 'freight',
+			label: 'Freight & Overhead',
+			name: 'freight_overhead',
 			options: {
 				sort: true,
 				customHeadRender: (columnMeta) => (
@@ -296,10 +237,10 @@ const SimpleDataTable = observer(() => {
 					});
 				}
 			}
-		},
+		},		
 		{
-			label: 'Overhead',
-			name: 'overhead',
+			label: 'Commissions',
+			name: 'commissions',
 			options: {
 				sort: true,
 				customHeadRender: (columnMeta) => (
@@ -324,10 +265,10 @@ const SimpleDataTable = observer(() => {
 					});
 				}
 			}
-		},
-		{
-			label: 'Commissions',
-			name: 'commissions',
+    },
+    {
+			label: 'GP',
+			name: 'gross_profit',
 			options: {
 				sort: true,
 				customHeadRender: (columnMeta) => (
@@ -354,8 +295,8 @@ const SimpleDataTable = observer(() => {
 			}
 		},
 		{
-			label: 'Gross Profit Margin',
-			name: 'grossProfitMargin',
+			label: 'GPM',
+			name: 'gross_profit_margin',
 			options: {
 				sort: true,
 				customHeadRender: (columnMeta) => (

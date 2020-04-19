@@ -1,45 +1,47 @@
 import React from 'react';
 import { observer } from 'mobx-react'
-// import {useHistory} from 'react-router-dom'
+import { dateHelper } from '../utilities/utilities'
 
-import Store from '../store/store'
-import {validItem} from '../utilities/utilities'
 
-import SimpleBarChart from '../components/simple_bar_chart'
-import SimplePieChart from '../components/simple_pie_chart'
+import query from '../store/query.store'
+import auth from '../store/auth.store'
+
+import SimpleBarChart from '../components/simple.bar.chart'
+import SimplePieChart from '../components/simple.pie.chart'
 import SimpleDataTable from '../components/simple_data_table';
+import SimpleRadarChart from '../components/simple.radar.chart';
 
 const Dashboard = observer(() => {
     // const history = useHistory()
-    const [state, setState] = React.useState({
-        valid: false,        
-    })
+    const [valid, isValid] = React.useState(false)
+    const dates = `${dateHelper(query.start)} - ${dateHelper(query.end)}`
+    const [item, setItem] = React.useState('')
+    const [items, setItems] = React.useState([])
+    const [active, setActive] = React.useState('')
     const itemRef = React.useRef(null);
-    const endingPeriodRef = React.useRef(null);
+    const startRef = React.useRef(null);
 
     React.useEffect(() => {
-		Store.token && itemRef.current.focus();
+		auth.isAuth && itemRef.current.focus();
     }, []);
+
+    const fetch = async (item) => {
+        const res = await query.fetch_item_description(item)
+        setItems(res)
+    }
+
+    const validItem = (items, item) => {
+        return items.some(i => i.item_id === item)
+    }
     
     React.useEffect(
-        () => {
-            if (validItem(Store.item)) {
-                setState({
-                    ...state,
-                    valid: true
-                });
-                Store.gql_fetch_itemName();
-            } else {
-                setState({
-                    ...state,
-                    valid: false
-                });
-                Store.gql_fetch_itemName();
-            }
+        () => {            
+            if (item.length > 2) {
+                fetch(item)
+            }           
         },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [ Store.item ]
-    );    
+        [item]
+    );
 
     return (
         <div className="dashboard disable-scrollbars">        
@@ -58,79 +60,204 @@ const Dashboard = observer(() => {
                 <div className="options-outer-container">
                     <div className="options-container">
                         <div className="options grid">
-                            <input className={state.valid ? "options" : "options invalid"} ref={itemRef} name="item" type="text" value={Store.item} onChange={(e) => {
-                                Store.item = e.target.value
-                                localStorage.setItem('item', e.target.value);
-                            }} />
-                            <p className="options">{Store.itemName}</p>
-                            <input className="options" ref={endingPeriodRef} name="endingPeriod" type="date" value={Store.endingPeriod} onChange={(e) => {
-                                Store.endingPeriod = e.target.value
-                                localStorage.setItem('endingPeriod', e.target.value);
-                            }} />
-                            <p className="options">{Store.twoYearPriorStartingPeriod} - {Store.endingPeriod}</p>
                             <button 
-                                disabled={state.valid ? false : true} 
-                                className={state.valid ? "options" : "options disabled"} 
-                                onClick={async () => {
-                                    await Store.gql_fetch_data()                                
-                                }}
-                            >
+                                    disabled={valid ? false : true} 
+                                    className={valid ? "options" : "options disabled"} 
+                                    onClick={async () => {                                                         
+                                        query.fetch_data()                                        
+                                    }}
+                                >
                                 Refresh Data
                             </button>
-                        </div>    
-                    </div>                            
+                            <input className={valid ? "options" : "options invalid"} ref={itemRef} name="item" type="text" value={item} onChange={(e) => {
+                                setItem(e.target.value)
+                                localStorage.setItem('item', e.target.value);                                
+                            }} />
+                            <label className="options options-label" htmlFor="start">Start</label>
+                            <input className="options" ref={startRef} name="start" type="date" value={query.start} onChange={(e) => {
+                                query.start = e.target.value
+                                localStorage.setItem('start', e.target.value);
+                            }} />
+                            <label className="options options-label" htmlFor="end">End</label>
+                            <input className="options" name="end" type="date" value={query.end} onChange={(e) => {
+                                query.end = e.target.value
+                                localStorage.setItem('end', e.target.value);
+                            }} />                                                                               
+                        </div>
+
+                        {items && <div className="options-container-list">
+                            <ul>                                
+                                {items.map((item,index) => (
+                                    <li 
+                                        key={index} 
+                                        className={active === item.item_id ? "options-container-li-active" : "options-container-li"}
+                                        onClick={() => {
+                                            setActive(item.item_id)
+                                            setItem(item.item_id)
+                                            if (validItem(items, item.item_id)) isValid(true)
+                                            setItems(items.filter(i => item.item_id === i.item_id))                                                                           
+                                            query.item = item.item_id
+                                        }}
+                                    >
+                                        <span className="options-container-li-iid">[{item.item_id}]</span> {item.item_description}
+                                    </li>
+                                ))}
+                            </ul>     
+                        </div>}
+
+                    </div>                    
                 </div>
+                
             </section>
 
-            {Store.isLoaded &&
+            {query.noSales &&
+                <div className="sub-title">
+                    <h2>No sales were found during {dates}.</h2>
+                </div>
+            }
+
+            {(!query.isLoading && query.dataIsLoaded) && !query.noSales &&
                 (
                     <>
                         <section id="kpi">
-                            <div className="kpi-container grid">
-                                <div className="kpi-avg-qty kpi-boxes">
-                                    <h2>Average Qty:</h2>
-                                    <p>{Store.avgQty.toFixed(0)}</p>
-                                </div>
-                                <div className="kpi-avg-sales kpi-boxes">
-                                    <h2>Average Sales:</h2>
-                                    <p>
-                                        {Store.avgSales.toLocaleString('en', {
-                                            style: 'currency',
-                                            currency: 'USD',
-                                            minimumFractionDigits: 0,
-                                            maximumFractionDigits: 0
-                                        })}
-                                    </p>
-                                </div>
-                                <div className="kpi-avg-costs kpi-boxes">
-                                    <h2>Average Costs:</h2>
-                                    <p>
-                                        {Store.avgCosts.toLocaleString('en', {
-                                            style: 'currency',
-                                            currency: 'USD',
-                                            minimumFractionDigits: 0,
-                                            maximumFractionDigits: 0
-                                        })}
-                                    </p>
-                                </div>
+                            <div className="kpi-outer-container">
+                                <div className="kpi-container grid">
+                                    <div className="kpi-container kpi-boxes">
+                                        <h2>Quantity Sold:</h2>
+                                        <p>{query.item_data.quantity.toFixed(0)}</p>
+                                    </div>
+                                    <div className="kpi-container kpi-boxes">
+                                        <h2>Sales:</h2>
+                                        <p>
+                                            {query.item_data.sales.toLocaleString('en', {
+                                                style: 'currency',
+                                                currency: 'USD',
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0
+                                            })}
+                                        </p>
+                                    </div>
+                                    <div className="kpi-container kpi-boxes">
+                                        <h2>Costs:</h2>
+                                        <p>
+                                            {query.item_data.costs.toLocaleString('en', {
+                                                style: 'currency',
+                                                currency: 'USD',
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0
+                                            })}
+                                        </p>
+                                        <p>
+                                            {query.item_data.sales !== 0 ? ((query.item_data.costs / query.item_data.sales) * 100).toFixed(2) : "N/A"}% of Sales
+                                        </p>
+                                    </div>
+                                    <div className="kpi-container kpi-boxes">
+                                        <h2>Discounts:</h2>
+                                        <p>
+                                            {query.item_data.tradefees.toLocaleString('en', {
+                                                style: 'currency',
+                                                currency: 'USD',
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0
+                                            })}
+                                        </p>
+                                        <p>
+                                            {query.item_data.sales !== 0 ? ((query.item_data.tradefees / query.item_data.sales) * 100).toFixed(2) : "N/A"}% of Sales
+                                        </p>
+                                    </div>
+                                    <div className="kpi-container kpi-boxes">
+                                        <h2>Rebates:</h2>
+                                        <p>
+                                            {query.item_data.rebates.toLocaleString('en', {
+                                                style: 'currency',
+                                                currency: 'USD',
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0
+                                            })}
+                                        </p>
+                                        <p>
+                                            {query.item_data.sales !== 0 ? ((query.item_data.rebates / query.item_data.sales) * 100).toFixed(2) : "N/A"}% of Sales
+                                        </p>
+                                    </div>
+                                    <div className="kpi-container kpi-boxes">
+                                        <h2>Freight & Overhead:</h2>
+                                        <p>
+                                            {(query.item_data.freight + query.item_data.overhead).toLocaleString('en', {
+                                                style: 'currency',
+                                                currency: 'USD',
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0
+                                            })}
+                                        </p>
+                                        <p>
+                                            {query.item_data.sales !== 0 ? (((query.item_data.freight + query.item_data.overhead) / query.item_data.sales) * 100).toFixed(2) : "N/A"}% of Sales
+                                        </p>
+                                    </div>
+                                    <div className="kpi-container kpi-boxes">
+                                        <h2>GP & Margin %:</h2>
+                                        <p>
+                                            {(query.item_data.sales - query.item_data.costs - query.item_data.tradefees - query.item_data.rebates - query.item_data.freight - query.item_data.overhead)
+                                                .toLocaleString('en', {
+                                                    style: 'currency',
+                                                    currency: 'USD',
+                                                    minimumFractionDigits: 0,
+                                                    maximumFractionDigits: 0
+                                                }
+                                            )}
+                                        </p>    
+                                        <p>
+                                            {query.item_data.sales !== 0 ? (((query.item_data.sales - query.item_data.costs - query.item_data.tradefees - query.item_data.rebates - query.item_data.freight - query.item_data.overhead)/query.item_data.sales)*100)
+                                                .toFixed(2) : "N/A"    
+                                            }% of Sales
+                                        </p>
+                                    </div>
+                                    <div className="kpi-container kpi-boxes">
+                                        <h2>Avg Price Sold:</h2>
+                                        <p>
+                                            {query.item_data.quantity > 0 ? (query.item_data.sales / query.item_data.quantity)
+                                                .toLocaleString('en', {
+                                                    style: 'currency',
+                                                    currency: 'USD',
+                                                    minimumFractionDigits: 0,
+                                                    maximumFractionDigits: 0
+                                                }
+                                            ) : "N/A"}
+                                        </p>
+                                    </div>
+                                    <div className="kpi-container kpi-boxes">
+                                        <h2>Avg Price after Disc:</h2>
+                                        <p>
+                                            {query.item_data.quantity !== 0 ? ((query.item_data.sales - query.item_data.tradefees - query.item_data.rebates) / query.item_data.quantity)
+                                                .toLocaleString('en', {
+                                                    style: 'currency',
+                                                    currency: 'USD',
+                                                    minimumFractionDigits: 0,
+                                                    maximumFractionDigits: 0
+                                                }
+                                            ) : "N/A"}
+                                        </p>
+                                    </div>                                    
+                                </div>                                    
                             </div>
                         </section>                        
                         <section id="charts">
-                            <div className="charts-container grid">
-                                <div className="bar-chart-container">
-                                    <div className="bar-chart-title"><h2>Sales Over Time</h2></div>
-                                    <div className="bar-chart">
-                                        <SimpleBarChart data={Store.barChartData} colorMap={Store.colorMap} />
+                            <div className="chart-container grid">
+                                <div className="chart-container">
+                                    <div className="chart-title"><h2>Breakdown of Sale</h2></div>
+                                            <div className="sub-title"><p>{dates}</p></div>
+                                    <div className="chart">
+                                        <SimpleRadarChart/>
+                                    </div>
+                                </div>
+                                <div className="chart-container">
+                                    <div className="chart-title"><h2>Sales Over Time</h2></div>
+                                    <div className="chart">
+                                        <SimpleBarChart />
                                     </div>
                                 </div>                                                
-                                <div className="pie-chart-container">
-                                    <div className="pie-chart-title"><h2>Breakdown of Customers</h2></div>
-                                    <div className="period-selector">
-                                        <button className={Store.period === "twoYearPriorPeriod" ? "period-selector-active" : null} onClick={() => Store.period = "twoYearPriorPeriod"}>{Store.twoYearPriorEndingPeriod}</button>
-                                        <button className={Store.period === "oneYearPriorPeriod" ? "period-selector-active" : null} onClick={() => Store.period = "oneYearPriorPeriod"}>{Store.oneYearPriorEndingPeriod}</button>
-                                        <button className={Store.period === "currentPeriod" ? "period-selector-active" : null} onClick={() => Store.period = "currentPeriod"}>{Store.endingPeriod}</button>
-                                    </div>
-                                    <div className="pie-chart">                                    
+                                <div className="chart-container">
+                                    <div className="chart-title"><h2>Breakdown of Customers</h2></div>                                    
+                                    <div className="chart">                                    
                                         <SimplePieChart />
                                     </div>
                                 </div>
@@ -139,14 +266,11 @@ const Dashboard = observer(() => {
                         <section id="table">
                             <div className="data-table-container grid">
                                 <div className="data-table-title"><h2>Sales Details</h2></div>
-                                <div className="period-selector">
-                                    <button className={Store.period === "twoYearPriorPeriod" ? "period-selector-active" : null} onClick={() => Store.period = "twoYearPriorPeriod"}>{Store.twoYearPriorEndingPeriod}</button>
-                                    <button className={Store.period === "oneYearPriorPeriod" ? "period-selector-active" : null} onClick={() => Store.period = "oneYearPriorPeriod"}>{Store.oneYearPriorEndingPeriod}</button>
-                                    <button className={Store.period === "currentPeriod" ? "period-selector-active" : null} onClick={() => Store.period = "currentPeriod"}>{Store.endingPeriod}</button>
-                                </div>
+
                                 <div className="data-table">
                                     <SimpleDataTable />
                                 </div>
+
                             </div>
                         </section>
                     </>
