@@ -1,7 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react'
 import { dateHelper } from '../utilities/utilities'
-
+import withSizes from 'react-sizes'
+// import { useHistory } from 'react-router-dom'
 
 import query from '../store/query.store'
 import auth from '../store/auth.store'
@@ -11,7 +12,11 @@ import SimplePieChart from '../components/simple.pie.chart'
 import SimpleDataTable from '../components/simple_data_table';
 import SimpleRadarChart from '../components/simple.radar.chart';
 
-const Dashboard = observer(() => {
+const mapSizesToProps = ({ width }) => ({
+    isMobile: width < 960,
+  })
+
+const Dashboard = observer(({isMobile}) => {
     // const history = useHistory()
     const [valid, isValid] = React.useState(false)
     const dates = `${dateHelper(query.start)} - ${dateHelper(query.end)}`
@@ -61,9 +66,9 @@ const Dashboard = observer(() => {
                     <div className="options-container">
                         <div className="options grid">
                             <button 
-                                    disabled={valid ? false : true} 
-                                    className={valid ? "options" : "options disabled"} 
-                                    onClick={async () => {                                                         
+                                    disabled={valid && query.start !== '' && query.end !== '' ? false : true} 
+                                    className={valid && query.start !== '' && query.end !== '' ? "options" : "options disabled"} 
+                                    onClick={() => {                                                         
                                         query.fetch_data()                                        
                                     }}
                                 >
@@ -106,6 +111,12 @@ const Dashboard = observer(() => {
                         </div>}
 
                     </div>                    
+
+                    <div className={query.dataIsLoaded && !isMobile ? "scrolldown" : ""}>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
                 </div>
                 
             </section>
@@ -121,6 +132,7 @@ const Dashboard = observer(() => {
                     <>
                         <section id="kpi">
                             <div className="kpi-outer-container">
+                                <div className="sub-title"><p>{dates}</p></div>
                                 <div className="kpi-container grid">
                                     <div className="kpi-container kpi-boxes">
                                         <h2>Quantity Sold:</h2>
@@ -244,19 +256,21 @@ const Dashboard = observer(() => {
                             <div className="chart-container grid">
                                 <div className="chart-container">
                                     <div className="chart-title"><h2>Breakdown of Sale</h2></div>
-                                            <div className="sub-title"><p>{dates}</p></div>
+                                    <div className="sub-title"><p>{dates}</p></div>
                                     <div className="chart">
                                         <SimpleRadarChart/>
                                     </div>
                                 </div>
                                 <div className="chart-container">
                                     <div className="chart-title"><h2>Sales Over Time</h2></div>
+                                    <div className="sub-title"><p>{dates}</p></div>
                                     <div className="chart">
                                         <SimpleBarChart />
                                     </div>
                                 </div>                                                
                                 <div className="chart-container">
-                                    <div className="chart-title"><h2>Breakdown of Customers</h2></div>                                    
+                                    <div className="chart-title"><h2>Breakdown of Customers</h2></div>    
+                                    <div className="sub-title"><p>{dates}</p></div>                                
                                     <div className="chart">                                    
                                         <SimplePieChart />
                                     </div>
@@ -266,7 +280,7 @@ const Dashboard = observer(() => {
                         <section id="table">
                             <div className="data-table-container grid">
                                 <div className="data-table-title"><h2>Sales Details</h2></div>
-
+                                <div className="sub-title"><p>{dates}</p></div>
                                 <div className="data-table">
                                     <SimpleDataTable />
                                 </div>
@@ -280,4 +294,4 @@ const Dashboard = observer(() => {
     );
 })
 
-export default Dashboard;
+export default withSizes(mapSizesToProps)(Dashboard);

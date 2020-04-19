@@ -38,6 +38,7 @@ const query_store = observable({
     },
     fetch_data() {
         this.isLoading = true
+        this.dataIsLoaded = false
         progress.start();
 
         let params
