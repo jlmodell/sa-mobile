@@ -2,6 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react'
 import { dateHelper } from '../utilities/utilities'
 import withSizes from 'react-sizes'
+import github from '../assets/GitHub-Mark-Light-64px.png'
 // import { useHistory } from 'react-router-dom'
 
 import query from '../store/query.store'
@@ -17,11 +18,14 @@ const mapSizesToProps = ({ width }) => ({
   })
 
 var placeholder;
+var title;
 
 if (process.env.REACT_APP_DUMMY) {
+    title = "Sample Data Fetch and Display"
     placeholder = "Enter an Item ID:"          //TODO, search by ID or Name
 } else {
     placeholder = "Enter an Item ID: (ROI ID)"
+    title = "Busse Hospital Disposables"
 }
 
 const Dashboard = observer(({isMobile}) => {
@@ -66,7 +70,8 @@ const Dashboard = observer(({isMobile}) => {
         <div className="dashboard disable-scrollbars">        
             <section id="header">
                 <nav className="nav grid">
-                    <h1>Busse Hospital Disposables</h1>
+                    <h1>{title}</h1>
+                    
                     <ul>
                         <li><a href="#options-selector">Data Selector</a></li>
                         <li><a href="#kpi">KPI</a></li>
@@ -74,10 +79,11 @@ const Dashboard = observer(({isMobile}) => {
                         <li><a href="#table">Tables</a></li>
                     </ul>
                 </nav>
+                <div className="github-logo"><a href="https://github.com/jlmodell/sa-mobile" _taget="blank"><img src={github} alt="github" height="64"/></a></div>
             </section>
             <section id="options-selector">
-                <div className="options-outer-container">
-                    <div className="options-container">
+                <div className="options-outer-container">                    
+                    <div className="options-container">                        
                         <div className="options grid">
                             <button 
                                     disabled={valid && query.start !== '' && query.end !== '' ? false : true} 

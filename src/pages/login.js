@@ -3,6 +3,7 @@ import auth from '../store/auth.store'
 import { useHistory } from "react-router-dom";
 import { observer } from 'mobx-react'
 import logo from '../assets/logo.png';
+import github from '../assets/GitHub-Mark-Light-64px.png'
 
 const Login = observer(() => {
   const history = useHistory()
@@ -36,7 +37,7 @@ const Login = observer(() => {
                 history.push("/sa")
             }}>Login</button>        
         </div>
-        {/* <div className="help"><p>--help: <a href="mailto:jmodell@busseinc.com">jmodell@busseinc.com</a></p></div> */}
+        <div className="github-logo"><a href="https://github.com/jlmodell/sa-mobile" _taget="blank"><img src={github} alt="github" height="64"/></a></div>
     </div>
   );
 })
