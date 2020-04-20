@@ -8,13 +8,17 @@ const progress = new Progress({
 	color: '#266dd3'
 });
 
-const buildPieChartName = (pct) => {
-	return `Others < ${(pct * 100).toFixed(1)}% sold`;
-};
+var base
 
-const api = "https://busseweb.com:9090/api/sales/item_"
-const item = "https://busseweb.com:9090/api/item_description"
-const quantity_sold_per_month = "https://busseweb.com:9090/api/sales/summary_"
+if (process.env.REACT_APP_DUMMY) {
+    base = "https://busseweb.com:9091"
+} else {
+    base = "https://busseweb.com:9090"
+}
+
+const api = `${base}/api/sales/item_`
+const item = `${base}/api/item_description`
+const quantity_sold_per_month = `${base}/api/sales/summary_`
 
 const query_store = observable({
     isLoading: false,
@@ -23,7 +27,7 @@ const query_store = observable({
     start: localStorage.getItem("start") || '',
     end: localStorage.getItem("end") || '',
     item: '',    
-    item_name: localStorage.getItem("item_name") || '',
+    // item_name: localStorage.getItem("item_name") || '',
     item_data: [],
     customers_data: [],
     qty_sold_per_month: [],

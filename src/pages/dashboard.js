@@ -16,6 +16,14 @@ const mapSizesToProps = ({ width }) => ({
     isMobile: width < 960,
   })
 
+var placeholder;
+
+if (process.env.REACT_APP_DUMMY) {
+    placeholder = "Enter an Item ID:"          //TODO, search by ID or Name
+} else {
+    placeholder = "Enter an Item ID: (ROI ID)"
+}
+
 const Dashboard = observer(({isMobile}) => {
     // const history = useHistory()
     const [valid, isValid] = React.useState(false)
@@ -41,12 +49,18 @@ const Dashboard = observer(({isMobile}) => {
     
     React.useEffect(
         () => {            
-            if (item.length > 2) {
-                fetch(item)
-            }           
+            if (process.env.REACT_APP_DUMMY) {
+                if (item.length >= 1) {
+                    fetch(item)
+                }
+            } else {
+                if (item.length > 2) {
+                    fetch(item)
+                }           
+            }     
         },
         [item]
-    );
+    );    
 
     return (
         <div className="dashboard disable-scrollbars">        
@@ -74,7 +88,7 @@ const Dashboard = observer(({isMobile}) => {
                                 >
                                 Refresh Data
                             </button>
-                            <input className={valid ? "options" : "options invalid"} ref={itemRef} name="item" type="text" value={item} onChange={(e) => {
+                            <input className={valid ? "options" : "options invalid"} autocomplete="off" placeholder={placeholder} ref={itemRef} name="item" type="text" value={item} onChange={(e) => {
                                 setItem(e.target.value)
                                 localStorage.setItem('item', e.target.value);                                
                             }} />
@@ -90,7 +104,8 @@ const Dashboard = observer(({isMobile}) => {
                             }} />                                                                               
                         </div>
 
-                        {items && <div className="options-container-list">
+                        {items && item.length >=1 && <div className="options-container-list">
+                            <div style={{color:"white"}} className="chart-title">Choose (1) One.</div>
                             <ul>                                
                                 {items.map((item,index) => (
                                     <li 

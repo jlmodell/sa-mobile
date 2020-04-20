@@ -2,7 +2,13 @@ import { observable } from 'mobx';
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
 
-const api = "https://busseweb.com:9090/login"
+var api
+
+if (process.env.REACT_APP_DUMMY) {
+    api = "https://busseweb.com:9091/login"
+} else {
+    api = "https://busseweb.com:9090/login"
+}
 
 const auth_store = observable({
     email: '',

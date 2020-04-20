@@ -8,7 +8,7 @@ import query from '../store/query.store';
 const SimpleDataTable = observer(() => {	
   var title;
   
-  const [data, _] = React.useState(query.customers_data.map(c => {
+  const [data] = React.useState(query.customers_data.map(c => {
     return {
       customer: c._id.customer,
       cid: c._id.cid,
@@ -19,8 +19,8 @@ const SimpleDataTable = observer(() => {
       tradefees: c.tradefees,
       rebates: c.rebates,
       freight_overhead: c.freight + c.overhead,
-      gross_profit: c.sales - c.costs - c.commissions - c.tradefees - c.freight - c.overhead,
-      gross_profit_margin: ((c.sales - c.costs - c.commissions - c.tradefees - c.freight - c.overhead)/c.sales)*100
+      gross_profit: c.sales - c.costs - c.commissions - c.tradefees - c.freight - c.overhead - c.rebates,
+      gross_profit_margin: ((c.sales - c.costs - c.commissions - c.tradefees - c.freight - c.rebates - c.overhead)/c.sales)*100
     }
   }))
 
