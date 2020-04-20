@@ -5,5 +5,7 @@ The intent was to include a picker, charts and a datatable and I wanted them to 
 The user logs in via email/password and receives a token that is required for all requests.
 
 The site consumes an api built wite node.js using the fastify framework.  The data is housed in a mongodb.
+-> https://github.com/jlmodell/api-fastify-mongodb for more details on the backend
+
 
 Stack: (M)ongodb (F)astify (R)eact (N)odejs
