@@ -59,7 +59,6 @@ const Dashboard = observer(({isMobile}) => {
                 setActive(match.item_id)
                 setDescription(match.item_description)
                 isValid(true)
-                setItems(items.filter(i => match.item_id === i.item_id))
             } else {
                 setActive('')
                 setDescription('')
@@ -78,11 +77,11 @@ const Dashboard = observer(({isMobile}) => {
 
     React.useEffect(
         () => {
-            if (active === '') {
+            if (active === '' || item === '') {
                 query.dataIsLoaded = false
             }
         },
-        [active]
+        [active,item]
     )
 
     return (
@@ -152,7 +151,7 @@ const Dashboard = observer(({isMobile}) => {
 
                     </div>
 
-                    <div className={query.dataIsLoaded && !isMobile ? "scrolldown" : ""}>
+                    <div className={query.dataIsLoaded && !query.noSales && !isMobile ? "scrolldown" : ""}>
                         <span></span>
                         <span></span>
                         <span></span>
@@ -161,7 +160,7 @@ const Dashboard = observer(({isMobile}) => {
 
             </section>
 
-            {query.noSales &&
+            {query.dataIsLoaded && query.noSales &&
                 <div className="sub-title">
                     <h2>No sales of {active} - {description} were found during {dates}.</h2>
                 </div>
