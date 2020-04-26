@@ -97,7 +97,7 @@ const Dashboard = observer(({isMobile}) => {
                         <li><a href="#table">Tables</a></li>
                     </ul>
                 </nav>
-                <div className="github-logo"><a href="https://github.com/jlmodell/sa-mobile" _target="blank"><img src={github} alt="github" height="64"/></a></div>
+                <div className="github-logo"><a href="https://github.com/jlmodell/sa-mobile" target="_blank"><img src={github} alt="github" height="64"/></a></div>
             </section>
             <section id="options-selector">
                 <div className="options-outer-container">
