@@ -46,7 +46,7 @@ const Login = observer(() => {
                 history.push("/sa")
             }}>Login</button>
         </div>
-        <div className="github-logo"><a href="https://github.com/jlmodell/sa-mobile" target="_blank"><img src={github} alt="github" height="64"/></a></div>
+        <div className="github-logo"><a href="https://github.com/jlmodell/sa-mobile" target="_blank" rel="noopener noreferrer"><img src={github} alt="github" height="64"/></a></div>
     </div>
   );
 })

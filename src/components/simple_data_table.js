@@ -5,9 +5,9 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
 import query from '../store/query.store';
 
-const SimpleDataTable = observer(() => {	
+const SimpleDataTable = observer(() => {
   var title;
-  
+
   const [data] = React.useState(query.customers_data.map(c => {
     return {
       customer: c._id.customer,
@@ -31,7 +31,7 @@ const SimpleDataTable = observer(() => {
 			options: {
 				filter: true,
 				sort: true,
-				customHeadRender: (columnMeta) => (
+				customHeadRender: (columnMeta, handleToggleColumn) => (
 					<th
 						key={0}
 						style={{
@@ -42,6 +42,7 @@ const SimpleDataTable = observer(() => {
 							fontWeight: 'bold',
 							cursor: 'pointer'
 						}}
+                        onClick={() => handleToggleColumn(columnMeta.index)}
 					>
 						{columnMeta.label}
 					</th>
@@ -53,7 +54,7 @@ const SimpleDataTable = observer(() => {
 			name: 'cid',
 			options: {
 				filter: true,
-				customHeadRender: (columnMeta) => (
+				customHeadRender: (columnMeta, handleToggleColumn) => (
 					<th
 						key={1}
 						style={{
@@ -62,8 +63,9 @@ const SimpleDataTable = observer(() => {
 							fontSize: '0.7em',
 							textAlign: 'left',
 							fontWeight: 'bold',
-							cursor: 'pointer'
+                            cursor: 'pointer'
 						}}
+                        onClick={() => handleToggleColumn(columnMeta.index)}
 					>
 						{columnMeta.label}
 					</th>
@@ -75,7 +77,7 @@ const SimpleDataTable = observer(() => {
 			name: 'quantity',
 			options: {
 				sort: true,
-				customHeadRender: (columnMeta) => (
+				customHeadRender: (columnMeta, handleToggleColumn) => (
 					<th
 						key={2}
 						style={{
@@ -86,6 +88,7 @@ const SimpleDataTable = observer(() => {
 							fontWeight: 'bold',
 							cursor: 'pointer'
 						}}
+                        onClick={() => handleToggleColumn(columnMeta.index)}
 					>
 						{columnMeta.label}
 					</th>
@@ -103,7 +106,7 @@ const SimpleDataTable = observer(() => {
 			name: 'sales',
 			options: {
 				sort: true,
-				customHeadRender: (columnMeta) => (
+				customHeadRender: (columnMeta, handleToggleColumn) => (
 					<th
 						key={5}
 						style={{
@@ -114,6 +117,7 @@ const SimpleDataTable = observer(() => {
 							fontWeight: 'bold',
 							cursor: 'pointer'
 						}}
+                        onClick={() => handleToggleColumn(columnMeta.index)}
 					>
 						{columnMeta.label}
 					</th>
@@ -131,7 +135,7 @@ const SimpleDataTable = observer(() => {
 			name: 'costs',
 			options: {
 				sort: true,
-				customHeadRender: (columnMeta) => (
+				customHeadRender: (columnMeta, handleToggleColumn) => (
 					<th
 						key={6}
 						style={{
@@ -142,6 +146,7 @@ const SimpleDataTable = observer(() => {
 							fontWeight: 'bold',
 							cursor: 'pointer'
 						}}
+                        onClick={() => handleToggleColumn(columnMeta.index)}
 					>
 						{columnMeta.label}
 					</th>
@@ -159,7 +164,7 @@ const SimpleDataTable = observer(() => {
 			name: 'rebates',
 			options: {
 				sort: true,
-				customHeadRender: (columnMeta) => (
+				customHeadRender: (columnMeta, handleToggleColumn) => (
 					<th
 						key={7}
 						style={{
@@ -170,6 +175,7 @@ const SimpleDataTable = observer(() => {
 							fontWeight: 'bold',
 							cursor: 'pointer'
 						}}
+                        onClick={() => handleToggleColumn(columnMeta.index)}
 					>
 						{columnMeta.label}
 					</th>
@@ -187,7 +193,7 @@ const SimpleDataTable = observer(() => {
 			name: 'tradefees',
 			options: {
 				sort: true,
-				customHeadRender: (columnMeta) => (
+				customHeadRender: (columnMeta, handleToggleColumn) => (
 					<th
 						key={8}
 						style={{
@@ -198,6 +204,7 @@ const SimpleDataTable = observer(() => {
 							fontWeight: 'bold',
 							cursor: 'pointer'
 						}}
+                        onClick={() => handleToggleColumn(columnMeta.index)}
 					>
 						{columnMeta.label}
 					</th>
@@ -215,7 +222,7 @@ const SimpleDataTable = observer(() => {
 			name: 'freight_overhead',
 			options: {
 				sort: true,
-				customHeadRender: (columnMeta) => (
+				customHeadRender: (columnMeta, handleToggleColumn) => (
 					<th
 						key={9}
 						style={{
@@ -226,6 +233,7 @@ const SimpleDataTable = observer(() => {
 							fontWeight: 'bold',
 							cursor: 'pointer'
 						}}
+                        onClick={() => handleToggleColumn(columnMeta.index)}
 					>
 						{columnMeta.label}
 					</th>
@@ -237,13 +245,13 @@ const SimpleDataTable = observer(() => {
 					});
 				}
 			}
-		},		
+		},
 		{
 			label: 'Commissions',
 			name: 'commissions',
 			options: {
 				sort: true,
-				customHeadRender: (columnMeta) => (
+				customHeadRender: (columnMeta, handleToggleColumn) => (
 					<th
 						key={10}
 						style={{
@@ -254,6 +262,7 @@ const SimpleDataTable = observer(() => {
 							fontWeight: 'bold',
 							cursor: 'pointer'
 						}}
+                        onClick={() => handleToggleColumn(columnMeta.index)}
 					>
 						{columnMeta.label}
 					</th>
@@ -271,7 +280,7 @@ const SimpleDataTable = observer(() => {
 			name: 'gross_profit',
 			options: {
 				sort: true,
-				customHeadRender: (columnMeta) => (
+				customHeadRender: (columnMeta, handleToggleColumn) => (
 					<th
 						key={11}
 						style={{
@@ -282,6 +291,7 @@ const SimpleDataTable = observer(() => {
 							fontWeight: 'bold',
 							cursor: 'pointer'
 						}}
+                        onClick={() => handleToggleColumn(columnMeta.index)}
 					>
 						{columnMeta.label}
 					</th>
@@ -299,7 +309,7 @@ const SimpleDataTable = observer(() => {
 			name: 'gross_profit_margin',
 			options: {
 				sort: true,
-				customHeadRender: (columnMeta) => (
+				customHeadRender: (columnMeta, handleToggleColumn) => (
 					<th
 						key={12}
 						style={{
@@ -310,6 +320,7 @@ const SimpleDataTable = observer(() => {
 							fontWeight: 'bold',
 							cursor: 'pointer'
 						}}
+                        onClick={() => handleToggleColumn(columnMeta.index)}
 					>
 						{columnMeta.label}
 					</th>
